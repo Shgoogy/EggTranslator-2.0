@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Egg Language Translator</title>
+  <style>
+    body {
+      background: #fffaf0;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 2em;
+      color: #d18e00;
+    }
+    textarea {
+      width: 90%;
+      height: 100px;
+      margin: 10px 0;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #f0e68c;
+      resize: vertical;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      background: #f7c948;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #f5b041;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 20px;
+      background: #fff8dc;
+      border: 2px dashed #f5b041;
+      border-radius: 10px;
+      font-size: 18px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🥚 Egg Language Translator</h1>
+
+  <textarea id="inputText" placeholder="Enter English or Egg language here..."></textarea><br>
+
+  <button onclick="translateToEgg()">Translate to Egg 🥚</button>
+  <button onclick="translateToEnglish()">Translate to English 🔤</button>
+
+  <div class="output" id="outputText">Translation will appear here...</div>
+
+  <script>
+    // Dictionary: English ➜ Egg
+    const dictionary = {
+      "i": "Egg",
+      "you": "Egg",
+      "am": "egg",
+      "are": "egg",
+      "must": "egg egg",
+      "can": "🥚 egg",
+      "cannot": "🥚🥚 egg",
+      "can't": "🥚🥚 egg",
+      "say": "Egg Egg",
+      "speak": "🥚 🥚",
+      "or": "🥚",
+      "egg": "egg",
+      "love": "Egg ❤️",
+      "go": "egg egg",
+      "stop": "❌ egg",
+      "yes": "Egg! 🥚",
+      "no": "❌",
+      "hello": "Egg! 🥚",
+      "hi": "Egg! 🥚",
+      "goodbye": "egg.",
+      "not": "🥚🥚",
+      "very": "🥚🥚",
+      "excited": "🥚❗",
+      "help": "🥚 Egg ❗",
+      "why": "🥚❓",
+      "what": "egg❓",
+      "where": "Egg❓",
+      "when": "Egg egg❓",
+      "who": "Egg 🥚❓"
+    };
+
+    function translateToEgg() {
+      const input = document.getElementById("inputText").value.toLowerCase();
+      const words = input.match(/\b[\w']+\b/g) || [];
+      let result = [];
+
+      for (let word of words) {
+        if (dictionary[word]) {
+          result.push(dictionary[word]);
+        } else {
+          result.push("🥚"); // unknown word = emoji egg
+        }
+      }
+
+      document.getElementById("outputText").innerText = result.join(" ");
+    }
+
+    function translateToEnglish() {
+      const input = document.getElementById("inputText").value.trim();
+      const words = input.split(/\s+/);
+      let result = [];
+
+      for (let i = 0; i < words.length; i++) {
+        let one = words[i];
+        let two = one + " " + (words[i + 1] || "");
+        let three = two + " " + (words[i + 2] || "");
+
+        let match = Object.entries(dictionary).find(([key, val]) => val === three);
+        if (match) {
+          result.push(match[0]);
+          i += 2;
+          continue;
+        }
+
+        match = Object.entries(dictionary).find(([key, val]) => val === two);
+        if (match) {
+          result.push(match[0]);
+          i += 1;
+          continue;
+        }
+
+        match = Object.entries(dictionary).find(([key, val]) => val === one);
+        if (match) {
+          result.push(match[0]);
+        } else {
+          result.push("[?]");
+        }
+      }
+
+      document.getElementById("outputText").innerText = result.join(" ");
+    }
+  </script>
+
+</body>
+</html>
