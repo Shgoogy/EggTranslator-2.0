@@ -93,39 +93,16 @@
 </div>
 
 <script>
-  // Egg phrases dictionary
-  const eggDictionary = {
-    a: "egg",
-    b: "egg egg",
-    c: "egg egg egg",
-    d: "egg 🥚",
-    e: "🥚 egg",
-    f: "🥚🥚",
-    g: "egg🥚",
-    h: "🥚egg",
-    i: "🥚🥚 egg",
-    j: "egg🥚egg",
-    k: "EGG 🥚",
-    l: "Egg 🥚",
-    m: "🥚 Egg",
-    n: "EGG",
-    o: "EGG EGG",
-    p: "egg EGG",
-    q: "🥚🥚🥚",
-    r: "egg-egg",
-    s: "🥚-🥚",
-    t: "egg.",
-    u: "🥚, egg",
-    v: "🥚 egg 🥚",
-    w: "🥚egg🥚",
-    x: "EGG.egg",
-    y: "egg?",
-    z: "egg!"
-  };
+  const eggDictionary = {};
+  const reverseDictionary = {};
 
-  const reverseDictionary = Object.fromEntries(
-    Object.entries(eggDictionary).map(([k, v]) => [v.toLowerCase().trim().replace(/\s+/g, " "), k])
-  );
+  // Fill dictionary with 🥚a to 🥚z
+  for (let i = 97; i <= 122; i++) {
+    const letter = String.fromCharCode(i);
+    const eggToken = `🥚${letter}`;
+    eggDictionary[letter] = eggToken;
+    reverseDictionary[eggToken] = letter;
+  }
 
   function translateToEgg() {
     const input = document.getElementById("input").value.toLowerCase().trim();
@@ -135,7 +112,7 @@
       if (eggDictionary[char]) {
         result.push(eggDictionary[char]);
       } else if (char === " ") {
-        result.push(""); // preserve space
+        result.push(" "); // keep space
       } else {
         result.push(char);
       }
@@ -145,20 +122,19 @@
   }
 
   function translateToEnglish() {
-    const input = document.getElementById("input").value.toLowerCase().trim();
+    const input = document.getElementById("input").value.trim();
     const chunks = input.split(/\s+/);
     let result = "";
 
     for (let chunk of chunks) {
-      const cleanChunk = chunk.trim().replace(/\s+/g, " ");
+      const token = chunk.trim();
 
-      if (reverseDictionary[cleanChunk]) {
-        result += reverseDictionary[cleanChunk];
-      } else if (cleanChunk === "") {
+      if (reverseDictionary[token]) {
+        result += reverseDictionary[token];
+      } else if (token === "") {
         result += " ";
       } else {
         result += "?";
-        console.warn("Unrecognized chunk:", chunk);
       }
     }
 
@@ -172,9 +148,7 @@
     });
   }
 
-  // Floating egg background animation
-  const eggChars = ["🥚"];
-
+  // Floating eggs
   function randomBetween(min, max) {
     return Math.random() * (max - min) + min;
   }
@@ -182,9 +156,9 @@
   function spawnEgg() {
     const egg = document.createElement("div");
     egg.className = "floating-egg";
-    egg.textContent = eggChars[Math.floor(Math.random() * eggChars.length)];
+    egg.textContent = "🥚";
 
-    const size = randomBetween(1, 5); // now 1 to 5 rem
+    const size = randomBetween(1, 5);
     egg.style.fontSize = size + "rem";
 
     const edges = ["top", "right", "bottom", "left"];
