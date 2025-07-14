@@ -73,9 +73,9 @@
       y: "Yolk", z: "Zenegg"
     };
 
-    // Create reverse dictionary
+    // Reverse dictionary: egg phrase => letter
     const reverseDictionary = Object.fromEntries(
-      Object.entries(eggDictionary).map(([k, v]) => [v.toLowerCase(), k])
+      Object.entries(eggDictionary).map(([letter, phrase]) => [phrase.toLowerCase(), letter])
     );
 
     function translateToEgg() {
@@ -84,9 +84,9 @@
 
       for (let char of input) {
         if (eggDictionary[char]) {
-          result += eggDictionary[char] + " ";
+          result += eggDictionary[char] + " | ";
         } else if (char === " ") {
-          result += "  ";
+          result += "  "; // extra space between words
         } else {
           result += char + " ";
         }
@@ -96,12 +96,13 @@
     }
 
     function translateToEnglish() {
-      const input = document.getElementById("input").value.trim();
-      const words = input.split(/\s{1,2}/);
+      const input = document.getElementById("input").value.toLowerCase().trim();
+      const tokens = input.split(/\s*\|\s*/); // egg tokens are split by |
+
       let result = "";
 
-      for (let word of words) {
-        const cleaned = word.trim().toLowerCase();
+      for (let token of tokens) {
+        const cleaned = token.trim();
         if (reverseDictionary[cleaned]) {
           result += reverseDictionary[cleaned];
         } else if (cleaned === "") {
