@@ -99,29 +99,26 @@
     function translateToEnglish() {
       let input = document.getElementById("input").value.toLowerCase().trim();
       let result = "";
-      let i = 0;
+      let buffer = "";
+      const words = input.split(/\s+/);
 
-      while (i < input.length) {
-        let matched = false;
+      for (let i = 0; i < words.length; i++) {
+        if (buffer.length > 0) buffer += " ";
+        buffer += words[i];
 
-        for (const phrase of sortedEggPhrases) {
-          if (input.slice(i, i + phrase.length) === phrase) {
-            result += reverseDictionary[phrase];
-            i += phrase.length;
-            matched = true;
-            break;
-          }
+        const phrase = buffer.trim();
+
+        if (reverseDictionary[phrase]) {
+          result += reverseDictionary[phrase];
+          buffer = "";
+        } else if (phrase === "") {
+          result += " ";
+          buffer = "";
         }
+      }
 
-        if (!matched) {
-          const char = input[i];
-          if (char === " ") {
-            result += " ";
-          } else {
-            result += "?";
-          }
-          i++;
-        }
+      if (buffer.trim().length > 0) {
+        result += "?";
       }
 
       document.getElementById("output").textContent = result;
@@ -137,4 +134,5 @@
 
 </body>
 </html>
+
 
