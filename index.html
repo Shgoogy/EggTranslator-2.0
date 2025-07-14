@@ -73,10 +73,11 @@
       y: "Yolk", z: "Zenegg"
     };
 
-    // Reverse dictionary: egg phrase => letter
     const reverseDictionary = Object.fromEntries(
-      Object.entries(eggDictionary).map(([letter, phrase]) => [phrase.toLowerCase(), letter])
+      Object.entries(eggDictionary).map(([k, v]) => [v.toLowerCase(), k])
     );
+
+    const sortedEggPhrases = Object.keys(reverseDictionary).sort((a, b) => b.length - a.length);
 
     function translateToEgg() {
       const input = document.getElementById("input").value.toLowerCase();
@@ -84,9 +85,9 @@
 
       for (let char of input) {
         if (eggDictionary[char]) {
-          result += eggDictionary[char] + " | ";
+          result += eggDictionary[char] + " ";
         } else if (char === " ") {
-          result += "  "; // extra space between words
+          result += "  ";
         } else {
           result += char + " ";
         }
@@ -96,19 +97,30 @@
     }
 
     function translateToEnglish() {
-      const input = document.getElementById("input").value.toLowerCase().trim();
-      const tokens = input.split(/\s*\|\s*/); // egg tokens are split by |
-
+      let input = document.getElementById("input").value.toLowerCase().trim();
       let result = "";
+      let i = 0;
 
-      for (let token of tokens) {
-        const cleaned = token.trim();
-        if (reverseDictionary[cleaned]) {
-          result += reverseDictionary[cleaned];
-        } else if (cleaned === "") {
-          result += " ";
-        } else {
-          result += "?"; // unknown token
+      while (i < input.length) {
+        let matched = false;
+
+        for (const phrase of sortedEggPhrases) {
+          if (input.slice(i, i + phrase.length) === phrase) {
+            result += reverseDictionary[phrase];
+            i += phrase.length;
+            matched = true;
+            break;
+          }
+        }
+
+        if (!matched) {
+          const char = input[i];
+          if (char === " ") {
+            result += " ";
+          } else {
+            result += "?";
+          }
+          i++;
         }
       }
 
@@ -125,3 +137,4 @@
 
 </body>
 </html>
+
