@@ -1,146 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Egg Language Translator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Egg Translator</title>
   <style>
     body {
-      background: #fffaf0;
-      font-family: 'Segoe UI', sans-serif;
-      text-align: center;
-      padding: 40px;
+      font-family: Arial, sans-serif;
+      background: #fff9f0;
+      color: #333;
+      padding: 2em;
+      max-width: 600px;
+      margin: auto;
     }
     h1 {
-      font-size: 2em;
-      color: #d18e00;
+      text-align: center;
+      color: #d97706;
     }
     textarea {
-      width: 90%;
+      width: 100%;
       height: 100px;
-      margin: 10px 0;
-      font-size: 16px;
-      padding: 10px;
-      border-radius: 10px;
-      border: 2px solid #f0e68c;
+      padding: 1em;
+      font-size: 1em;
+      margin-bottom: 1em;
+      border: 1px solid #ddd;
+      border-radius: 6px;
       resize: vertical;
     }
     button {
-      margin: 10px;
-      padding: 10px 20px;
-      background: #f7c948;
+      padding: 10px 15px;
+      margin-right: 8px;
+      margin-bottom: 1em;
+      background: #ffe17d;
       border: none;
-      border-radius: 10px;
-      font-size: 16px;
+      border-radius: 5px;
+      font-weight: bold;
       cursor: pointer;
+      transition: background 0.2s;
     }
     button:hover {
-      background: #f5b041;
+      background: #ffd93a;
     }
-    .output {
-      margin-top: 20px;
-      padding: 20px;
-      background: #fff8dc;
-      border: 2px dashed #f5b041;
-      border-radius: 10px;
-      font-size: 18px;
+    #output {
       white-space: pre-wrap;
+      background: #fff7d6;
+      padding: 1em;
+      border-radius: 6px;
+      min-height: 80px;
     }
   </style>
 </head>
 <body>
 
-  <h1>🥚 Egg Language Translator</h1>
+  <h1>🥚 Egg Translator</h1>
 
-  <textarea id="inputText" placeholder="Enter English or Egg language here..."></textarea><br>
+  <textarea id="input" placeholder="Type your message here..."></textarea>
+  <br>
 
-  <button onclick="translateToEgg()">Translate to Egg 🥚</button>
-  <button onclick="translateToEnglish()">Translate to English 🔤</button>
+  <button onclick="translateToEgg()">Translate to Egg</button>
+  <button onclick="translateToEnglish()">Translate to English</button>
+  <button onclick="copyEgg()">Copy</button>
 
-  <div class="output" id="outputText">Translation will appear here...</div>
+  <div id="output"></div>
 
   <script>
-    // Dictionary: English ➜ Egg
-    const dictionary = {
-      "i": "Egg",
-      "you": "Egg",
-      "am": "egg",
-      "are": "egg",
-      "must": "egg egg",
-      "can": "🥚 egg",
-      "cannot": "🥚🥚 egg",
-      "can't": "🥚🥚 egg",
-      "say": "Egg Egg",
-      "speak": "🥚 🥚",
-      "or": "🥚",
-      "egg": "egg",
-      "love": "Egg ❤️",
-      "go": "egg egg",
-      "stop": "❌ egg",
-      "yes": "Egg! 🥚",
-      "no": "❌",
-      "hello": "Egg! 🥚",
-      "hi": "Egg! 🥚",
-      "goodbye": "egg.",
-      "not": "🥚🥚",
-      "very": "🥚🥚",
-      "excited": "🥚❗",
-      "help": "🥚 Egg ❗",
-      "why": "🥚❓",
-      "what": "egg❓",
-      "where": "Egg❓",
-      "when": "Egg egg❓",
-      "who": "Egg 🥚❓"
+    const eggDictionary = {
+      a: "egg", b: "egg egg", c: "egg egg egg", d: "egg 🥚", e: "🥚 egg",
+      f: "🥚🥚", g: "egg🥚", h: "🥚egg", i: "Egg", j: "Egg egg",
+      k: "Egg Egg", l: "Egg 🥚", m: "🥚 Egg", n: "EGG", o: "EGG EGG",
+      p: "Eggy", q: "Eggology", r: "Eggman", s: "Scramble", t: "Toast",
+      u: "Under-egg", v: "Over-egg", w: "Waffle", x: "X-egg",
+      y: "Yolk", z: "Zenegg"
     };
 
-    function translateToEgg() {
-      const input = document.getElementById("inputText").value.toLowerCase();
-      const words = input.match(/\b[\w']+\b/g) || [];
-      let result = [];
+    // Create reverse dictionary
+    const reverseDictionary = Object.fromEntries(
+      Object.entries(eggDictionary).map(([k, v]) => [v.toLowerCase(), k])
+    );
 
-      for (let word of words) {
-        if (dictionary[word]) {
-          result.push(dictionary[word]);
+    function translateToEgg() {
+      const input = document.getElementById("input").value.toLowerCase();
+      let result = "";
+
+      for (let char of input) {
+        if (eggDictionary[char]) {
+          result += eggDictionary[char] + " ";
+        } else if (char === " ") {
+          result += "  ";
         } else {
-          result.push("🥚"); // unknown word = emoji egg
+          result += char + " ";
         }
       }
 
-      document.getElementById("outputText").innerText = result.join(" ");
+      document.getElementById("output").textContent = result.trim();
     }
 
     function translateToEnglish() {
-      const input = document.getElementById("inputText").value.trim();
-      const words = input.split(/\s+/);
-      let result = [];
+      const input = document.getElementById("input").value.trim();
+      const words = input.split(/\s{1,2}/);
+      let result = "";
 
-      for (let i = 0; i < words.length; i++) {
-        let one = words[i];
-        let two = one + " " + (words[i + 1] || "");
-        let three = two + " " + (words[i + 2] || "");
-
-        let match = Object.entries(dictionary).find(([key, val]) => val === three);
-        if (match) {
-          result.push(match[0]);
-          i += 2;
-          continue;
-        }
-
-        match = Object.entries(dictionary).find(([key, val]) => val === two);
-        if (match) {
-          result.push(match[0]);
-          i += 1;
-          continue;
-        }
-
-        match = Object.entries(dictionary).find(([key, val]) => val === one);
-        if (match) {
-          result.push(match[0]);
+      for (let word of words) {
+        const cleaned = word.trim().toLowerCase();
+        if (reverseDictionary[cleaned]) {
+          result += reverseDictionary[cleaned];
+        } else if (cleaned === "") {
+          result += " ";
         } else {
-          result.push("[?]");
+          result += "?"; // unknown token
         }
       }
 
-      document.getElementById("outputText").innerText = result.join(" ");
+      document.getElementById("output").textContent = result;
+    }
+
+    function copyEgg() {
+      const output = document.getElementById("output").textContent;
+      navigator.clipboard.writeText(output).then(() => {
+        alert("🥚 Copied to clipboard!");
+      });
     }
   </script>
 
