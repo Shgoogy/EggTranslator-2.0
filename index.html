@@ -12,10 +12,14 @@
       padding: 2em;
       max-width: 600px;
       margin: auto;
+      position: relative;
+      overflow: hidden;
     }
     h1 {
       text-align: center;
       color: #d97706;
+      z-index: 2;
+      position: relative;
     }
     textarea {
       width: 100%;
@@ -26,6 +30,8 @@
       border: 1px solid #ddd;
       border-radius: 6px;
       resize: vertical;
+      position: relative;
+      z-index: 2;
     }
     button {
       padding: 10px 15px;
@@ -37,6 +43,8 @@
       font-weight: bold;
       cursor: pointer;
       transition: background 0.2s;
+      position: relative;
+      z-index: 2;
     }
     button:hover {
       background: #ffd93a;
@@ -47,6 +55,33 @@
       padding: 1em;
       border-radius: 6px;
       min-height: 80px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Floating egg styles */
+    .egg {
+      position: fixed;
+      bottom: -50px;
+      font-size: 2rem;
+      animation: floatUp linear infinite;
+      opacity: 0.6;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(-120vh) rotate(360deg);
+        opacity: 0;
+      }
     }
   </style>
 </head>
@@ -54,9 +89,7 @@
 
   <h1>🥚 Egg Translator</h1>
 
-  <textarea id="input" placeholder="Type your message here..."></textarea>
-  <br>
-
+  <textarea id="input" placeholder="Type your message here..."></textarea><br />
   <button onclick="translateToEgg()">Translate to Egg</button>
   <button onclick="translateToEnglish()">Translate to English</button>
   <button onclick="copyEgg()">Copy</button>
@@ -77,11 +110,13 @@
       Object.entries(eggDictionary).map(([k, v]) => [v.toLowerCase(), k])
     );
 
+    const sortedEggPhrases = Object.keys(reverseDictionary).sort((a, b) => b.length - a.length);
+
     function translateToEgg() {
       const input = document.getElementById("input").value.toLowerCase();
       let result = "";
 
-      for (let char of input) {
+      for (const char of input) {
         if (eggDictionary[char]) {
           result += eggDictionary[char] + " ";
         } else if (char === " ") {
@@ -95,7 +130,7 @@
     }
 
     function translateToEnglish() {
-      const input = document.getElementById("input").value.toLowerCase().trim();
+      let input = document.getElementById("input").value.toLowerCase().trim();
       const words = input.split(/\s+/);
       let result = "";
       let buffer = [];
@@ -128,7 +163,33 @@
         alert("🥚 Copied to clipboard!");
       });
     }
+
+    // Floating eggs background
+    function spawnEgg() {
+      const egg = document.createElement("div");
+      egg.classList.add("egg");
+      egg.textContent = "🥚";
+
+      const size = Math.random() * 1.5 + 0.5;
+      const left = Math.random() * 100;
+      const duration = Math.random() * 15 + 10;
+
+      egg.style.left = left + "vw";
+      egg.style.fontSize = size + "rem";
+      egg.style.animationDuration = duration + "s";
+
+      document.body.appendChild(egg);
+
+      // Remove after animation
+      setTimeout(() => {
+        egg.remove();
+      }, duration * 1000);
+    }
+
+    // Spawn eggs every 400ms
+    setInterval(spawnEgg, 400);
   </script>
 
 </body>
 </html>
+
