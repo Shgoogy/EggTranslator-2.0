@@ -77,8 +77,6 @@
       Object.entries(eggDictionary).map(([k, v]) => [v.toLowerCase(), k])
     );
 
-    const sortedPhrases = Object.keys(reverseDictionary).sort((a, b) => b.split(" ").length - a.split(" ").length).reverse();
-
     function translateToEgg() {
       const input = document.getElementById("input").value.toLowerCase();
       let result = "";
@@ -102,35 +100,23 @@
       let result = "";
       let buffer = [];
 
-      while (words.length > 0) {
-        buffer.push(words.shift());
+      for (let i = 0; i <= words.length; i++) {
+        const tryPhrase = buffer.join(" ").trim();
 
-        const candidate = buffer.join(" ");
-        const match = reverseDictionary[candidate];
-
-        // Try to find the longest matching phrase
-        let longestMatch = "";
-        let matchedChar = "";
-
-        for (let phrase of sortedPhrases) {
-          if (candidate.startsWith(phrase)) {
-            longestMatch = phrase;
-            matchedChar = reverseDictionary[phrase];
-            break;
-          }
-        }
-
-        if (candidate === longestMatch) {
-          result += matchedChar;
+        if (reverseDictionary[tryPhrase]) {
+          result += reverseDictionary[tryPhrase];
           buffer = [];
-        } else if (buffer.length > 5 || candidate.length > 20) {
-          result += "?";
+        } else if (tryPhrase === "" && words[i]) {
+          result += " ";
+          buffer = [];
+        } else if (buffer.length >= 3 || i === words.length) {
+          if (tryPhrase !== "") result += "?";
           buffer = [];
         }
-      }
 
-      if (buffer.length > 0) {
-        result += "?";
+        if (i < words.length) {
+          buffer.push(words[i]);
+        }
       }
 
       document.getElementById("output").textContent = result;
@@ -146,4 +132,3 @@
 
 </body>
 </html>
-
