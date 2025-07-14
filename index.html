@@ -1,204 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Egg Translator</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      font-family: Arial, sans-serif;
-      background: #fff9f0;
-      position: relative;
-      min-height: 100vh;
-    }
-
-    .floating-egg {
-      position: absolute;
-      bottom: -50px;
-      font-size: 2rem;
-      animation: floatUp linear;
-      opacity: 0.5;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    @keyframes floatUp {
-      0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0;
-      }
-      10% {
-        opacity: 0.6;
-      }
-      100% {
-        transform: translateY(-120vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
-
-    .container {
-      position: relative;
-      z-index: 2;
-      max-width: 600px;
-      margin: auto;
-      padding: 2em;
-    }
-
-    h1 {
-      text-align: center;
-      color: #d97706;
-    }
-
-    textarea {
-      width: 100%;
-      height: 100px;
-      padding: 1em;
-      font-size: 1em;
-      margin-bottom: 1em;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      resize: vertical;
-    }
-
-    button {
-      padding: 10px 15px;
-      margin-right: 8px;
-      margin-bottom: 1em;
-      background: #ffe17d;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    button:hover {
-      background: #ffd93a;
-    }
-
-    #output {
-      white-space: pre-wrap;
-      background: #fff7d6;
-      padding: 1em;
-      border-radius: 6px;
-      min-height: 80px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Egg Translator</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #fff9f0;
+    position: relative;
+  }
+  .floating-egg {
+    position: fixed;
+    user-select: none;
+    pointer-events: none;
+    font-size: 1rem;
+    opacity: 0.6;
+    will-change: transform;
+    z-index: 0;
+  }
+  .container {
+    position: relative;
+    z-index: 10;
+    max-width: 600px;
+    margin: 2em auto;
+    padding: 1em 2em;
+    background: #fff7d6;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #f5d76e88;
+  }
+  h1 {
+    color: #d97706;
+    text-align: center;
+  }
+  textarea {
+    width: 100%;
+    height: 100px;
+    font-size: 1.1rem;
+    padding: 0.8em;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    resize: vertical;
+  }
+  button {
+    margin-top: 1em;
+    margin-right: 10px;
+    padding: 10px 16px;
+    background: #ffe17d;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  button:hover {
+    background: #ffd93a;
+  }
+  #output {
+    margin-top: 1em;
+    min-height: 80px;
+    background: #fff9d1;
+    padding: 1em;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+</style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>🥚 Egg Translator</h1>
+<div class="container">
+  <h1>🥚 Egg Translator</h1>
+  <textarea id="input" placeholder="Type your message here..."></textarea><br />
+  <button onclick="translateToEgg()">Translate to Egg</button>
+  <button onclick="translateToEnglish()">Translate to English</button>
+  <button onclick="copyEgg()">Copy</button>
+  <div id="output"></div>
+</div>
 
-    <textarea id="input" placeholder="Type your message here..."></textarea><br />
-    <button onclick="translateToEgg()">Translate to Egg</button>
-    <button onclick="translateToEnglish()">Translate to English</button>
-    <button onclick="copyEgg()">Copy</button>
+<script>
+  // Egg dictionary: letter → egg + letter combo
+  const eggDictionary = {
+    a: "🥚a",
+    b: "🥚b",
+    c: "🥚c",
+    d: "🥚d",
+    e: "🥚e",
+    f: "🥚f",
+    g: "🥚g",
+    h: "🥚h",
+    i: "🥚i",
+    j: "🥚j",
+    k: "🥚k",
+    l: "🥚l",
+    m: "🥚m",
+    n: "🥚n",
+    o: "🥚o",
+    p: "🥚p",
+    q: "🥚q",
+    r: "🥚r",
+    s: "🥚s",
+    t: "🥚t",
+    u: "🥚u",
+    v: "🥚v",
+    w: "🥚w",
+    x: "🥚x",
+    y: "🥚y",
+    z: "🥚z"
+  };
 
-    <div id="output"></div>
-  </div>
+  // Reverse dictionary for egg phrase → letter
+  const reverseDictionary = Object.fromEntries(
+    Object.entries(eggDictionary).map(([k, v]) => [v.toLowerCase(), k])
+  );
 
-  <script>
-    const eggDictionary = {
-      a: "egg",
-      b: "egg egg",
-      c: "egg egg egg",
-      d: "egg 🥚",
-      e: "🥚 egg",
-      f: "🥚🥚",
-      g: "egg🥚",
-      h: "🥚egg",
-      i: "🥚🥚 egg",
-      j: "egg🥚egg",
-      k: "EGG 🥚",
-      l: "Egg 🥚",
-      m: "🥚 Egg",
-      n: "EGG",
-      o: "EGG EGG",
-      p: "egg EGG",
-      q: "🥚🥚🥚",
-      r: "egg-egg",
-      s: "🥚-🥚",
-      t: "egg.",
-      u: "🥚, egg",
-      v: "🥚 egg 🥚",
-      w: "🥚egg🥚",
-      x: "EGG.egg",
-      y: "egg?",
-      z: "egg!"
-    };
+  function translateToEgg() {
+    const input = document.getElementById("input").value.toLowerCase();
+    let result = "";
 
-    const reverseDictionary = Object.fromEntries(
-      Object.entries(eggDictionary).map(([k, v]) => [v.toLowerCase(), k])
-    );
+    for (const char of input) {
+      if (eggDictionary[char]) {
+        result += eggDictionary[char] + "|";
+      } else if (char === " ") {
+        result += "|";  // separate spaces with empty chunk
+      } else {
+        result += char + "|";
+      }
+    }
 
-    const eggPhrases = Object.keys(reverseDictionary).sort((a, b) => b.length - a.length);
+    // Remove last |
+    if (result.endsWith("|")) result = result.slice(0, -1);
 
-    function translateToEgg() {
-      const input = document.getElementById("input").value.toLowerCase();
-      let result = "";
+    document.getElementById("output").textContent = result;
+  }
 
-      for (const char of input) {
-        if (eggDictionary[char]) {
-          result += eggDictionary[char] + " | ";
-        } else if (char === " ") {
-          result += "   | ";
-        } else {
-          result += char + " | ";
-        }
+  function translateToEnglish() {
+    const input = document.getElementById("input").value.toLowerCase().trim();
+    const chunks = input.split("|").map(c => c.trim());
+    let result = "";
+
+    for (const chunk of chunks) {
+      if (reverseDictionary[chunk]) {
+        result += reverseDictionary[chunk];
+      } else if (chunk === "") {
+        result += " ";
+      } else {
+        result += "?";
+      }
+    }
+
+    document.getElementById("output").textContent = result;
+  }
+
+  function copyEgg() {
+    const output = document.getElementById("output").textContent;
+    navigator.clipboard.writeText(output).then(() => {
+      alert("🥚 Copied to clipboard!");
+    });
+  }
+
+  // Floating egg animation variables
+  const eggChars = ["🥚"];
+
+  // Random utility
+  function randomBetween(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  // Spawn a floating egg at a random edge, moving in random direction
+  function spawnEgg() {
+    const egg = document.createElement("div");
+    egg.className = "floating-egg";
+    egg.textContent = eggChars[Math.floor(Math.random() * eggChars.length)];
+
+    // Random size 1rem to 15rem
+    const size = randomBetween(1, 15);
+    egg.style.fontSize = size + "rem";
+
+    // Choose a random spawn edge: top, right, bottom, left
+    const edges = ["top", "right", "bottom", "left"];
+    const edge = edges[Math.floor(Math.random() * edges.length)];
+
+    let startX, startY;
+
+    switch(edge) {
+      case "top":
+        startX = randomBetween(0, window.innerWidth);
+        startY = -50;
+        break;
+      case "right":
+        startX = window.innerWidth + 50;
+        startY = randomBetween(0, window.innerHeight);
+        break;
+      case "bottom":
+        startX = randomBetween(0, window.innerWidth);
+        startY = window.innerHeight + 50;
+        break;
+      case "left":
+        startX = -50;
+        startY = randomBetween(0, window.innerHeight);
+        break;
+    }
+
+    egg.style.left = startX + "px";
+    egg.style.top = startY + "px";
+
+    // Random movement vector toward opposite side + some randomness
+    // For example, if spawned at top, move generally downward
+    let velocityX, velocityY;
+    switch(edge) {
+      case "top":
+        velocityX = randomBetween(-0.5, 0.5);
+        velocityY = randomBetween(0.5, 1.5);
+        break;
+      case "right":
+        velocityX = randomBetween(-1.5, -0.5);
+        velocityY = randomBetween(-0.5, 0.5);
+        break;
+      case "bottom":
+        velocityX = randomBetween(-0.5, 0.5);
+        velocityY = randomBetween(-1.5, -0.5);
+        break;
+      case "left":
+        velocityX = randomBetween(0.5, 1.5);
+        velocityY = randomBetween(-0.5, 0.5);
+        break;
+    }
+
+    let posX = startX;
+    let posY = startY;
+
+    // Animate using requestAnimationFrame
+    let lifetime = 0;
+    const maxLifetime = 20000; // 20 seconds max
+
+    function animate() {
+      posX += velocityX;
+      posY += velocityY;
+      lifetime += 16;
+
+      egg.style.left = posX + "px";
+      egg.style.top = posY + "px";
+
+      // Remove if out of screen or lifetime exceeded
+      if (
+        posX < -100 || posX > window.innerWidth + 100 ||
+        posY < -100 || posY > window.innerHeight + 100 ||
+        lifetime > maxLifetime
+      ) {
+        egg.remove();
+        return;
       }
 
-      document.getElementById("output").textContent = result.trim();
+      requestAnimationFrame(animate);
     }
+    requestAnimationFrame(animate);
 
-    function translateToEnglish() {
-      const input = document.getElementById("input").value.toLowerCase().trim();
-      const parts = input.split("|").map(part => part.trim());
-      let result = "";
+    document.body.appendChild(egg);
+  }
 
-      for (const phrase of parts) {
-        if (reverseDictionary[phrase]) {
-          result += reverseDictionary[phrase];
-        } else if (phrase === "") {
-          result += " ";
-        } else {
-          result += "?";
-        }
-      }
-
-      document.getElementById("output").textContent = result;
-    }
-
-    function copyEgg() {
-      const output = document.getElementById("output").textContent;
-      navigator.clipboard.writeText(output).then(() => {
-        alert("🥚 Copied to clipboard!");
-      });
-    }
-
-    // Floating egg effect
-    function spawnEgg() {
-      const egg = document.createElement("div");
-      egg.className = "floating-egg";
-      egg.textContent = "🥚";
-
-      const size = Math.random() * 1.2 + 0.5;
-      const left = Math.random() * 100;
-      const duration = Math.random() * 15 + 10;
-
-      egg.style.left = `${left}vw`;
-      egg.style.fontSize = `${size}rem`;
-      egg.style.animationDuration = `${duration}s`;
-
-      document.body.appendChild(egg);
-      setTimeout(() => egg.remove(), duration * 1000);
-    }
-
-    setInterval(spawnEgg, 400);
-  </script>
+  // Spawn eggs at interval
+  setInterval(spawnEgg, 400);
+</script>
 
 </body>
 </html>
