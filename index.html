@@ -83,34 +83,34 @@
 </div>
 
 <script>
-  // Egg dictionary: letter → egg + letter combo
+  // New egg-only dictionary (egg-like phrases for letters)
   const eggDictionary = {
-    a: "🥚a",
-    b: "🥚b",
-    c: "🥚c",
-    d: "🥚d",
-    e: "🥚e",
-    f: "🥚f",
-    g: "🥚g",
-    h: "🥚h",
-    i: "🥚i",
-    j: "🥚j",
-    k: "🥚k",
-    l: "🥚l",
-    m: "🥚m",
-    n: "🥚n",
-    o: "🥚o",
-    p: "🥚p",
-    q: "🥚q",
-    r: "🥚r",
-    s: "🥚s",
-    t: "🥚t",
-    u: "🥚u",
-    v: "🥚v",
-    w: "🥚w",
-    x: "🥚x",
-    y: "🥚y",
-    z: "🥚z"
+    a: "egg",
+    b: "egg egg",
+    c: "egg egg egg",
+    d: "egg 🥚",
+    e: "🥚 egg",
+    f: "🥚🥚",
+    g: "egg🥚",
+    h: "🥚egg",
+    i: "🥚🥚 egg",
+    j: "egg🥚egg",
+    k: "EGG 🥚",
+    l: "Egg 🥚",
+    m: "🥚 Egg",
+    n: "EGG",
+    o: "EGG EGG",
+    p: "egg EGG",
+    q: "🥚🥚🥚",
+    r: "egg-egg",
+    s: "🥚-🥚",
+    t: "egg.",
+    u: "🥚, egg",
+    v: "🥚 egg 🥚",
+    w: "🥚egg🥚",
+    x: "EGG.egg",
+    y: "egg?",
+    z: "egg!"
   };
 
   // Reverse dictionary for egg phrase → letter
@@ -119,28 +119,26 @@
   );
 
   function translateToEgg() {
-    const input = document.getElementById("input").value.toLowerCase();
-    let result = "";
+    const input = document.getElementById("input").value.toLowerCase().trim();
+    let result = [];
 
     for (const char of input) {
       if (eggDictionary[char]) {
-        result += eggDictionary[char] + "|";
+        result.push(eggDictionary[char]);
       } else if (char === " ") {
-        result += "|";  // separate spaces with empty chunk
+        result.push(""); // represent space as empty string to keep spacing
       } else {
-        result += char + "|";
+        result.push(char);
       }
     }
 
-    // Remove last |
-    if (result.endsWith("|")) result = result.slice(0, -1);
-
-    document.getElementById("output").textContent = result;
+    // Join with spaces (not | anymore)
+    document.getElementById("output").textContent = result.join(" ");
   }
 
   function translateToEnglish() {
     const input = document.getElementById("input").value.toLowerCase().trim();
-    const chunks = input.split("|").map(c => c.trim());
+    const chunks = input.split(/\s+/);
     let result = "";
 
     for (const chunk of chunks) {
@@ -166,19 +164,17 @@
   // Floating egg animation variables
   const eggChars = ["🥚"];
 
-  // Random utility
   function randomBetween(min, max) {
     return Math.random() * (max - min) + min;
   }
 
-  // Spawn a floating egg at a random edge, moving in random direction
   function spawnEgg() {
     const egg = document.createElement("div");
     egg.className = "floating-egg";
     egg.textContent = eggChars[Math.floor(Math.random() * eggChars.length)];
 
-    // Random size 1rem to 15rem
-    const size = randomBetween(1, 15);
+    // Random size 1rem to 5rem (max size reduced)
+    const size = randomBetween(1, 5);
     egg.style.fontSize = size + "rem";
 
     // Choose a random spawn edge: top, right, bottom, left
@@ -209,8 +205,7 @@
     egg.style.left = startX + "px";
     egg.style.top = startY + "px";
 
-    // Random movement vector toward opposite side + some randomness
-    // For example, if spawned at top, move generally downward
+    // Random movement vector toward opposite side + randomness
     let velocityX, velocityY;
     switch(edge) {
       case "top":
@@ -233,10 +228,8 @@
 
     let posX = startX;
     let posY = startY;
-
-    // Animate using requestAnimationFrame
     let lifetime = 0;
-    const maxLifetime = 20000; // 20 seconds max
+    const maxLifetime = 20000;
 
     function animate() {
       posX += velocityX;
@@ -246,7 +239,6 @@
       egg.style.left = posX + "px";
       egg.style.top = posY + "px";
 
-      // Remove if out of screen or lifetime exceeded
       if (
         posX < -100 || posX > window.innerWidth + 100 ||
         posY < -100 || posY > window.innerHeight + 100 ||
@@ -258,15 +250,13 @@
 
       requestAnimationFrame(animate);
     }
-    requestAnimationFrame(animate);
 
+    requestAnimationFrame(animate);
     document.body.appendChild(egg);
   }
 
-  // Spawn eggs at interval
   setInterval(spawnEgg, 400);
 </script>
 
 </body>
 </html>
-
